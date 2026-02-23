@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Atelier Créatif</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--argile:#C68B59;--argile-pale:#F5EBE0;--galets:#7A9B8E;--galets-pale:#E8F2EE;--cartes:#D4A5A5;--cartes-pale:#F7EAEA;--blanc:#FDFCFB;--texte:#352840;--texte-doux:#7A6E82;--fond:#FAF8F6}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--fond);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(ellipse 700px 500px at 15% 0%,rgba(198,139,89,0.15) 0%,transparent 65%),radial-gradient(ellipse 600px 500px at 85% 100%,rgba(122,155,142,0.12) 0%,transparent 65%),radial-gradient(ellipse 500px 400px at 55% 45%,rgba(212,165,165,0.10) 0%,transparent 60%);pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(196,181,224,0.22) 1px,transparent 1px);background-size:30px 30px;pointer-events:none;z-index:0;opacity:0.5}
+  header{position:relative;z-index:1;text-align:center;padding:72px 24px 48px}
+  .site-label{display:inline-flex;align-items:center;gap:12px;font-size:0.72rem;font-weight:500;letter-spacing:3.5px;text-transform:uppercase;color:var(--texte-doux);margin-bottom:22px}
+  .site-label::before,.site-label::after{content:'';display:block;width:40px;height:1px;background:linear-gradient(to right,transparent,var(--argile));opacity:0.5}
+  .site-label::after{background:linear-gradient(to left,transparent,var(--argile))}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(2.8rem,6vw,4.6rem);color:var(--texte);line-height:1.08;letter-spacing:-0.5px}
+  h1 em{font-style:italic;font-weight:400;color:var(--argile)}
+  .header-sub{margin-top:18px;font-size:0.95rem;font-weight:300;color:var(--texte-doux);letter-spacing:0.3px}
+  .ribbon{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:32px}
+  .rdot{width:9px;height:9px;border-radius:50%}
+  .rdot:nth-child(1){background:var(--argile)} .rdot:nth-child(2){background:var(--galets)} .rdot:nth-child(3){background:var(--cartes)}
+  .grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:960px;margin:0 auto;padding:8px 32px 80px}
+  .card{display:block;text-decoration:none;border-radius:26px;overflow:hidden;background:var(--blanc);box-shadow:0 2px 20px rgba(53,40,64,0.07),0 0 0 1px rgba(53,40,64,0.04);transition:transform .4s cubic-bezier(.16,.84,.44,1),box-shadow .4s ease;cursor:pointer}
+  .card:hover{transform:translateY(-10px);box-shadow:0 28px 60px rgba(53,40,64,0.13),0 0 0 1px rgba(53,40,64,0.06)}
+  .card-visual{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .card:nth-child(1) .card-visual{background:linear-gradient(145deg,#f5e5d0,var(--argile-pale))}
+  .card:nth-child(2) .card-visual{background:linear-gradient(145deg,#d8f0e8,var(--galets-pale))}
+  .card:nth-child(3) .card-visual{background:linear-gradient(145deg,#f0dbdb,var(--cartes-pale))}
+  .card-visual::before{content:'';position:absolute;width:180px;height:180px;border-radius:50%;top:-50px;right:-50px;opacity:0.28;transition:transform .6s ease,opacity .4s ease}
+  .card:hover .card-visual::before{transform:scale(1.3);opacity:0.38}
+  .card:nth-child(1) .card-visual::before{background:var(--argile)}
+  .card:nth-child(2) .card-visual::before{background:var(--galets)}
+  .card:nth-child(3) .card-visual::before{background:var(--cartes)}
+  .card-visual::after{content:'';position:absolute;width:90px;height:90px;border-radius:50%;bottom:-25px;left:25px;opacity:0.18}
+  .card:nth-child(1) .card-visual::after{background:#A67245}
+  .card:nth-child(2) .card-visual::after{background:#5F826F}
+  .card:nth-child(3) .card-visual::after{background:#B88585}
+  .card-emoji{font-size:3.5rem;position:relative;z-index:1;filter:drop-shadow(0 4px 16px rgba(53,40,64,0.15));transition:transform .4s cubic-bezier(.16,.84,.44,1);user-select:none}
+  .card:hover .card-emoji{transform:scale(1.14) rotate(-5deg)}
+  .card-num{position:absolute;top:12px;left:12px;z-index:2;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:600;color:white;letter-spacing:0}
+  .card:nth-child(1) .card-num{background:#A67245}
+  .card:nth-child(2) .card-num{background:#5F826F}
+  .card:nth-child(3) .card-num{background:#B88585}
+  .card-body{padding:18px 20px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(53,40,64,0.05)}
+  .card-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.4rem;color:var(--texte);line-height:1.2}
+  .card-meta{font-size:0.76rem;font-weight:400;color:var(--texte-doux);margin-top:3px;letter-spacing:0.2px}
+  .card-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;transition:transform .3s ease}
+  .card:nth-child(1) .card-btn{background:var(--argile-pale);color:#A67245}
+  .card:nth-child(2) .card-btn{background:var(--galets-pale);color:#5F826F}
+  .card:nth-child(3) .card-btn{background:var(--cartes-pale);color:#B88585}
+  .card:hover .card-btn{transform:translateX(5px)}
+  @media(max-width:720px){.grid{grid-template-columns:repeat(2,1fr);padding:0 20px 60px;gap:16px}}
+  @media(max-width:460px){.grid{grid-template-columns:1fr} header{padding:48px 20px 36px}}
+  @keyframes riseIn{from{opacity:0;transform:translateY(36px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  header{animation:riseIn .8s cubic-bezier(.16,.84,.44,1) both}
+  .card:nth-child(1){animation:riseIn .7s .12s cubic-bezier(.16,.84,.44,1) both}
+  .card:nth-child(2){animation:riseIn .7s .22s cubic-bezier(.16,.84,.44,1) both}
+  .card:nth-child(3){animation:riseIn .7s .32s cubic-bezier(.16,.84,.44,1) both}
+</style>
+</head>
+<body>
+<header>
+  <div class="site-label">Mes créations</div>
+  <h1>Mon <em>atelier</em><br>créatif</h1>
+  <p class="header-sub">Découvrez mes créations en argile, galets et cartes de vœux</p>
+  <div class="ribbon"><div class="rdot"></div><div class="rdot"></div><div class="rdot"></div></div>
+</header>
+<main>
+  <div class="grid">
+    <!-- ✏️ Si nécessaire, ajustez les liens selon vos URLs Google Sites -->
+    <a class="card" href="https://sites.google.com/view/murielcreations/argile">
+      <div class="card-visual"><span class="card-num">1</span><span class="card-emoji">🏺</span></div>
+      <div class="card-body"><div><div class="card-title">Argile</div><div class="card-meta">Modelages & créations</div></div><div class="card-btn">→</div></div>
+    </a>
+    <a class="card" href="https://sites.google.com/view/murielcreations/galets">
+      <div class="card-visual"><span class="card-num">2</span><span class="card-emoji">🪨</span></div>
+      <div class="card-body"><div><div class="card-title">Galets</div><div class="card-meta">Peintures sur galets</div></div><div class="card-btn">→</div></div>
+    </a>
+    <a class="card" href="https://sites.google.com/view/murielcreations/cartes">
+      <div class="card-visual"><span class="card-num">3</span><span class="card-emoji">💌</span></div>
+      <div class="card-body"><div><div class="card-title">Cartes de vœux</div><div class="card-meta">Créations artisanales</div></div><div class="card-btn">→</div></div>
+    </a>
+  </div>
+</main>
+</body>
+</html>

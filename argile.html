@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Argile – Mon Atelier Créatif</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#C68B59;--accent-pale:#F5EBE0;--accent-soft:#D4A76F;--fond:#FDF8F5;--blanc:#FFFCFA;--texte:#352840;--texte-doux:#7A6E82}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--fond);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(ellipse 600px 400px at 90% 5%,rgba(198,139,89,0.18) 0%,transparent 65%),radial-gradient(ellipse 400px 500px at 5% 90%,rgba(212,167,111,0.10) 0%,transparent 60%);pointer-events:none;z-index:0}
+nav{position:relative;z-index:10;padding:24px 40px;display:flex;align-items:center}
+.back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:0.82rem;font-weight:500;color:var(--texte-doux);padding:9px 18px;border:1.5px solid rgba(53,40,64,0.15);border-radius:100px;transition:all .25s ease;background:rgba(255,255,255,0.7);backdrop-filter:blur(4px)}
+.back:hover{background:var(--accent);color:white;border-color:var(--accent);transform:translateX(-3px)}
+header{position:relative;z-index:1;text-align:center;padding:12px 24px 40px}
+.badge{display:inline-block;font-size:0.7rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);background:var(--accent-pale);padding:6px 16px;border-radius:100px;margin-bottom:18px}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:600;color:var(--texte);line-height:1.12}
+h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+.header-desc{margin-top:12px;font-size:0.9rem;font-weight:300;color:var(--texte-doux);max-width:420px;margin-left:auto;margin-right:auto;line-height:1.65}
+.deco-line{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:24px}
+.deco-line span{width:50px;height:1.5px;background:var(--accent-soft);border-radius:2px;opacity:0.6}
+.deco-line i{font-style:normal;font-size:0.85rem}
+.two-cols{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px 80px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.section-header{margin-bottom:20px}
+.section-pill{display:inline-flex;align-items:center;gap:7px;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;border-radius:100px;margin-bottom:12px}
+.pill-modeles{color:var(--accent);border:1.5px solid var(--accent);background:transparent}
+.pill-realisations{color:white;background:var(--accent);border:1.5px solid var(--accent)}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--texte)}
+.section-title em{font-style:italic;font-weight:400;color:var(--accent)}
+.gallery{column-count:2;column-gap:14px}
+.thumb{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--blanc);box-shadow:0 2px 12px rgba(53,40,64,0.08),0 0 0 1px rgba(53,40,64,0.04);transition:transform .35s cubic-bezier(.16,.84,.44,1),box-shadow .35s ease;break-inside:avoid;margin-bottom:14px;display:inline-block;width:100%}
+.thumb:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 16px 38px rgba(53,40,64,0.14),0 0 0 1px rgba(198,139,89,0.15)}
+.thumb img{width:100%;display:block;object-fit:cover;transition:transform .5s ease}
+.thumb:hover img{transform:scale(1.07)}
+.thumb:nth-child(3n+1) img{aspect-ratio:3/4}
+.thumb:nth-child(3n+2) img{aspect-ratio:4/3}
+.thumb:nth-child(3n+3) img{aspect-ratio:1}
+.thumb-placeholder{width:100%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(145deg,#f5e8d6,#ead7be);color:rgba(198,139,89,0.5);font-size:0.75rem;text-align:center;padding:20px}
+.thumb-placeholder .icon{font-size:2.5rem;margin-bottom:8px}
+.thumb-over{position:absolute;inset:0;background:linear-gradient(to top,rgba(198,139,89,0.88) 0%,rgba(198,139,89,0.08) 55%,transparent 100%);opacity:0;transition:opacity .3s ease;display:flex;align-items:flex-end;padding:12px}
+.thumb:hover .thumb-over{opacity:1}
+.thumb-cap{color:white;font-size:0.78rem;font-weight:500;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.lb{display:none;position:fixed;inset:0;z-index:1000;background:rgba(25,12,15,0.88);backdrop-filter:blur(12px) saturate(0.7);align-items:center;justify-content:center;padding:20px}
+.lb.on{display:flex}
+.lb-wrap{position:relative;max-width:780px;width:100%;animation:popIn .32s cubic-bezier(.16,.84,.44,1) both}
+@keyframes popIn{from{opacity:0;transform:scale(0.88) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.lb-img{width:100%;max-height:75vh;border-radius:18px;object-fit:contain;box-shadow:0 40px 80px rgba(0,0,0,0.45);display:block}
+.lb-info{background:white;border-radius:0 0 18px 18px;padding:14px 20px 16px;margin-top:-6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lb-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--texte)}
+.lb-tag{font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:100px;white-space:nowrap}
+.lb-tag.modeles{background:var(--accent-pale);color:var(--accent)}
+.lb-tag.realisations{background:var(--accent);color:white}
+.lb-counter{position:absolute;top:-40px;left:0;color:rgba(255,255,255,0.55);font-size:0.8rem;font-weight:500}
+.lb-close{position:absolute;top:-44px;right:0;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.lb-close:hover{background:var(--accent);border-color:var(--accent)}
+.lb-nav{position:absolute;top:42%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);color:white;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.lb-nav:hover{background:rgba(255,255,255,0.25)}
+.lb-prev{left:-56px} .lb-next{right:-56px}
+@media(max-width:900px){.two-cols{grid-template-columns:1fr;gap:48px;padding:0 20px 60px} .gallery{column-count:2}}
+@media(max-width:500px){.gallery{column-count:1} nav{padding:18px 20px} .lb-prev,.lb-next{display:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+header{animation:fadeUp .6s ease both}
+.section-modeles .section-header{animation:fadeUp .5s .1s ease both}
+.section-realisations .section-header{animation:fadeUp .5s .15s ease both}
+.thumb{animation:fadeUp .45s ease both}
+</style>
+</head>
+<body>
+<nav><a href="https://sites.google.com/view/murielcreations/accueil" class="back">← Accueil</a></nav>
+<header>
+  <div class="badge">🏺 Argile</div>
+  <h1><em>Créations</em> en argile</h1>
+  <p class="header-desc">Mes modelages et sculptures en terre</p>
+  <div class="deco-line"><span></span><i>✦</i><span></span></div>
+</header>
+<main>
+  <div class="two-cols">
+    <section class="section-modeles">
+      <div class="section-header">
+        <span class="section-pill pill-modeles">📖 Modèles</span>
+        <h2 class="section-title">Mes <em>modèles</em></h2>
+      </div>
+      <div class="gallery">
+        <!-- ✏️ REMPLACEZ CE BLOC PAR VOS IMAGES : -->
+        <!--
+        <div class="thumb" onclick="openLb('modeles',0)">
+          <img src="images/argile/modele1.jpg" alt="Description">
+          <div class="thumb-over"><div class="thumb-cap">Nom du modèle</div></div>
+        </div>
+        -->
+        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📁</div><strong>Vos images ici</strong><small>Voir instructions.txt</small></div></div>
+        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📷</div><small>Modèle 2</small></div></div>
+      </div>
+    </section>
+    <section class="section-realisations">
+      <div class="section-header">
+        <span class="section-pill pill-realisations">✨ Mes réalisations</span>
+        <h2 class="section-title">Mes <em>réalisations</em></h2>
+      </div>
+      <div class="gallery">
+        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📁</div><strong>Vos images ici</strong><small>Voir instructions.txt</small></div></div>
+        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📷</div><small>Réalisation 2</small></div></div>
+      </div>
+    </section>
+  </div>
+</main>
+<div class="lb" id="lb" onclick="closeLbBg(event)">
+  <div class="lb-wrap" id="lbWrap">
+    <div class="lb-counter" id="lbCounter">1/1</div>
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+    <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <div class="lb-info">
+      <div class="lb-title" id="lbTitle">Photo</div>
+      <span class="lb-tag modeles" id="lbTag">Modèles</span>
+    </div>
+  </div>
+</div>
+<script>
+const images={modeles:[],realisations:[]};
+let curSection='modeles',cur=0;
+function openLb(s,i){if(!images[s]||images[s].length===0)return;curSection=s;cur=i;refresh();document.getElementById('lb').classList.add('on');document.body.style.overflow='hidden'}
+function refresh(){const imgs=images[curSection];if(!imgs||imgs.length===0)return;const img=imgs[cur];document.getElementById('lbImg').src=img.src;document.getElementById('lbTitle').textContent=img.caption;document.getElementById('lbCounter').textContent=`${cur+1}/${imgs.length}`;const tag=document.getElementById('lbTag');tag.textContent=curSection==='modeles'?'Modèles':'Mes réalisations';tag.className='lb-tag '+(curSection==='modeles'?'modeles':'realisations')}
+function closeLb(){document.getElementById('lb').classList.remove('on');document.body.style.overflow=''}
+function closeLbBg(e){if(e.target===document.getElementById('lb'))closeLb()}
+function navLb(dir){const len=images[curSection].length;if(len===0)return;cur=(cur+dir+len)%len;const w=document.getElementById('lbWrap');w.style.animation='none';void w.offsetWidth;w.style.animation='popIn 0.25s cubic-bezier(.16,.84,.44,1) both';refresh()}
+document.addEventListener('keydown',e=>{if(!document.getElementById('lb').classList.contains('on'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowRight')navLb(1);if(e.key==='ArrowLeft')navLb(-1)});
+</script>
+</body>
+</html>
