@@ -114,61 +114,11 @@ const API_KEY='AIzaSyAVpvz8S40OHMuqOlPX0fB_qcNyd0DM7vY';
 const FOLDER_IDS={modeles:'1UNemyJ4OLn94xMmuZIOh0WnoEjEFMTWX',realisations:'1OejXqSWv_3pOJmm2fGhnre0lMjrbLPBN'};
 const images={modeles:[],realisations:[]};
 let curSection='modeles',cur=0;
-
-async function loadDriveImages(folderId,section){
-  const container=document.getElementById(`gallery-${section}`);
-  try{
-    const url=`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,mimeType)&key=${API_KEY}&orderBy=name`;
-    const response=await fetch(url);
-    const data=await response.json();
-    if(data.error){showError(container,section,data.error.message);return}
-    if(!data.files||data.files.length===0){container.innerHTML=`<div class="error-msg">Aucune image. Vérifiez que le dossier est public.</div>`;return}
-    container.innerHTML='';
-    data.files.forEach((file,idx)=>{
-      images[section].push(file);
-      const thumb=document.createElement('div');
-      thumb.className='thumb';
-      thumb.onclick=()=>openLb(section,idx);
-      const imgUrl=`https://drive.google.com/thumbnail?id=${file.id}&sz=w200`;
-      thumb.innerHTML=`<img src="${imgUrl}" alt="${file.name}" loading="lazy" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${file.id}=s200';"><div class="thumb-over"><div class="thumb-cap">${file.name.replace(/\.[^/.]+$/,'')}</div></div>`;
-      container.appendChild(thumb);
-    });
-  }catch(error){console.error('Erreur:',error);showError(container,section,error.message)}
-}
+async function loadDriveImages(folderId,section){const container=document.getElementById(`gallery-${section}`);try{const url=`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,mimeType)&key=${API_KEY}&orderBy=name`;const response=await fetch(url);const data=await response.json();if(data.error){showError(container,section,data.error.message);return}if(!data.files||data.files.length===0){container.innerHTML=`<div class="error-msg">Aucune image. Vérifiez que le dossier est public.</div>`;return}container.innerHTML='';data.files.forEach((file,idx)=>{images[section].push(file);const thumb=document.createElement('div');thumb.className='thumb';thumb.onclick=()=>openLb(section,idx);const imgUrl=`https://drive.google.com/thumbnail?id=${file.id}&sz=w200`;thumb.innerHTML=`<img src="${imgUrl}" alt="${file.name}" loading="lazy" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${file.id}=s200';"><div class="thumb-over"><div class="thumb-cap">${file.name.replace(/\.[^/.]+$/,'')}</div></div>`;container.appendChild(thumb)})}catch(error){console.error('Erreur:',error);showError(container,section,error.message)}}
 function showError(container,section,errorMsg){container.innerHTML=`<div class="error-msg"><strong>⚠️ Erreur</strong><br><br>${errorMsg}<br><br>Vérifiez que le dossier est partagé publiquement.</div>`}
 function openLb(s,i){curSection=s;cur=i;refresh();document.getElementById('lb').classList.add('on');document.body.style.overflow='hidden'}
-function refresh(){
-  const imgs=images[curSection];
-  if(!imgs||imgs.length===0)return;
-  const img=imgs[cur];
-  document.getElementById('lbImg').src=`https://drive.google.com/thumbnail?id=${img.id}&sz=w1200`;
-  document.getElementById('lbTitle').textContent=img.name.replace(/\.[^/.]+$/,'');
-  document.getElementById('lbCounter').textContent=`${cur+1}/${imgs.length}`;
-  const tag=document.getElementById('lbTag');
-  tag.textContent=curSection==='modeles'?'Modèles':'Mes réalisations';
-  tag.className='lb-tag '+(curSection==='modeles'?'modeles':'realisations');
-}
+function refresh(){const imgs=images[curSection];if(!imgs||imgs.length===0)return;const img=imgs[cur];document.getElementById('lbImg').src=`https://drive.google.com/thumbnail?id=${img.id}&sz=w1200`;document.getElementById('lbTitle').textContent=img.name.replace(/\.[^/.]+$/,'');document.getElementById('lbCounter').textContent=`${cur+1}/${imgs.length}`;const tag=document.getElementById('lbTag');tag.textContent=curSection==='modeles'?'Modèles':'Mes réalisations';tag.className='lb-tag '+(curSection==='modeles'?'modeles':'realisations')}
 function closeLb(){document.getElementById('lb').classList.remove('on');document.body.style.overflow=''}
 function closeLbBg(e){if(e.target===document.getElementById('lb'))closeLb()}
-function navLb(dir){
-  const len=images[curSection].length;
-  if(len===0)return;
-  cur=(cur+dir+len)%len;
-  const w=document.getElementById('lbWrap');
-  w.style.animation='none';void w.offsetWidth;
-  w.style.animation='popIn 0.25s cubic-bezier(.16,.84,.44,1) both';
-  refresh();
-}
-document.addEventListener('keydown',e=>{
-  if(!document.getElementById('lb').classList.contains('on'))return;
-  if(e.key==='Escape')closeLb();
-  if(e.key==='ArrowRight')navLb(1);
-  if(e.key==='ArrowLeft')navLb(-1);
-});
-window.addEventListener('load',()=>{
-  loadDriveImages(FOLDER_IDS.modeles,'modeles');
-  loadDriveImages(FOLDER_IDS.realisations,'realisations');
-});
-</script>
-</body>
-</html>
+function navLb(dir){const len=images[curSection].length;if(len===0)return;cur=(cur+dir+len)%len;const w=document.getElementById('lbWrap');w.style.animation='none';void w.offsetWidth;w.style.animation='popIn 0.25s cubic-bezier(.16,.84,.44,1) both';refresh()}
+document.addEventListener('keydown',e=>{if(!document.getElementById('lb').classList.contains('on'))return;if(e.key==='Escape')closeLb();if(e.key=
