@@ -36,8 +36,7 @@ h1 em{font-style:italic;font-weight:400;color:var(--accent)}
 .thumb:nth-child(3n+1) img{aspect-ratio:3/4}
 .thumb:nth-child(3n+2) img{aspect-ratio:4/3}
 .thumb:nth-child(3n+3) img{aspect-ratio:1}
-.thumb-placeholder{width:100%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(145deg,#f5e8d6,#ead7be);color:rgba(198,139,89,0.5);font-size:0.75rem;text-align:center;padding:20px}
-.thumb-placeholder .icon{font-size:2.5rem;margin-bottom:8px}
+.thumb-loading{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#f5e8d6,#ead7be);color:rgba(198,139,89,0.4);font-size:1.8rem}
 .thumb-over{position:absolute;inset:0;background:linear-gradient(to top,rgba(198,139,89,0.88) 0%,rgba(198,139,89,0.08) 55%,transparent 100%);opacity:0;transition:opacity .3s ease;display:flex;align-items:flex-end;padding:12px}
 .thumb:hover .thumb-over{opacity:1}
 .thumb-cap{color:white;font-size:0.78rem;font-weight:500;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
@@ -57,6 +56,7 @@ h1 em{font-style:italic;font-weight:400;color:var(--accent)}
 .lb-nav{position:absolute;top:42%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);color:white;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .lb-nav:hover{background:rgba(255,255,255,0.25)}
 .lb-prev{left:-56px} .lb-next{right:-56px}
+.error-msg{background:rgba(198,139,89,0.1);border:1px solid var(--accent);border-radius:12px;padding:20px;margin:20px 0;color:var(--texte);line-height:1.6}
 @media(max-width:900px){.two-cols{grid-template-columns:1fr;gap:48px;padding:0 20px 60px} .gallery{column-count:2}}
 @media(max-width:500px){.gallery{column-count:1} nav{padding:18px 20px} .lb-prev,.lb-next{display:none}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
@@ -81,16 +81,8 @@ header{animation:fadeUp .6s ease both}
         <span class="section-pill pill-modeles">📖 Modèles</span>
         <h2 class="section-title">Mes <em>modèles</em></h2>
       </div>
-      <div class="gallery">
-        <!-- ✏️ REMPLACEZ CE BLOC PAR VOS IMAGES : -->
-        <!--
-        <div class="thumb" onclick="openLb('modeles',0)">
-          <img src="images/argile/modele1.jpg" alt="Description">
-          <div class="thumb-over"><div class="thumb-cap">Nom du modèle</div></div>
-        </div>
-        -->
-        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📁</div><strong>Vos images ici</strong><small>Voir instructions.txt</small></div></div>
-        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📷</div><small>Modèle 2</small></div></div>
+      <div class="gallery" id="gallery-modeles">
+        <div class="thumb"><div class="thumb-loading">⏳</div></div>
       </div>
     </section>
     <section class="section-realisations">
@@ -98,9 +90,8 @@ header{animation:fadeUp .6s ease both}
         <span class="section-pill pill-realisations">✨ Mes réalisations</span>
         <h2 class="section-title">Mes <em>réalisations</em></h2>
       </div>
-      <div class="gallery">
-        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📁</div><strong>Vos images ici</strong><small>Voir instructions.txt</small></div></div>
-        <div class="thumb"><div class="thumb-placeholder"><div class="icon">📷</div><small>Réalisation 2</small></div></div>
+      <div class="gallery" id="gallery-realisations">
+        <div class="thumb"><div class="thumb-loading">⏳</div></div>
       </div>
     </section>
   </div>
@@ -119,14 +110,65 @@ header{animation:fadeUp .6s ease both}
   </div>
 </div>
 <script>
+const API_KEY='AIzaSyAVpvz8S40OHMuqOlPX0fB_qcNyd0DM7vY';
+const FOLDER_IDS={modeles:'1UNemyJ4OLn94xMmuZIOh0WnoEjEFMTWX',realisations:'1OejXqSWv_3pOJmm2fGhnre0lMjrbLPBN'};
 const images={modeles:[],realisations:[]};
 let curSection='modeles',cur=0;
-function openLb(s,i){if(!images[s]||images[s].length===0)return;curSection=s;cur=i;refresh();document.getElementById('lb').classList.add('on');document.body.style.overflow='hidden'}
-function refresh(){const imgs=images[curSection];if(!imgs||imgs.length===0)return;const img=imgs[cur];document.getElementById('lbImg').src=img.src;document.getElementById('lbTitle').textContent=img.caption;document.getElementById('lbCounter').textContent=`${cur+1}/${imgs.length}`;const tag=document.getElementById('lbTag');tag.textContent=curSection==='modeles'?'Modèles':'Mes réalisations';tag.className='lb-tag '+(curSection==='modeles'?'modeles':'realisations')}
+
+async function loadDriveImages(folderId,section){
+  const container=document.getElementById(`gallery-${section}`);
+  try{
+    const url=`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,mimeType)&key=${API_KEY}&orderBy=name`;
+    const response=await fetch(url);
+    const data=await response.json();
+    if(data.error){showError(container,section,data.error.message);return}
+    if(!data.files||data.files.length===0){container.innerHTML=`<div class="error-msg">Aucune image. Vérifiez que le dossier est public.</div>`;return}
+    container.innerHTML='';
+    data.files.forEach((file,idx)=>{
+      images[section].push(file);
+      const thumb=document.createElement('div');
+      thumb.className='thumb';
+      thumb.onclick=()=>openLb(section,idx);
+      const imgUrl=`https://drive.google.com/thumbnail?id=${file.id}&sz=w200`;
+      thumb.innerHTML=`<img src="${imgUrl}" alt="${file.name}" loading="lazy" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/${file.id}=s200';"><div class="thumb-over"><div class="thumb-cap">${file.name.replace(/\.[^/.]+$/,'')}</div></div>`;
+      container.appendChild(thumb);
+    });
+  }catch(error){console.error('Erreur:',error);showError(container,section,error.message)}
+}
+function showError(container,section,errorMsg){container.innerHTML=`<div class="error-msg"><strong>⚠️ Erreur</strong><br><br>${errorMsg}<br><br>Vérifiez que le dossier est partagé publiquement.</div>`}
+function openLb(s,i){curSection=s;cur=i;refresh();document.getElementById('lb').classList.add('on');document.body.style.overflow='hidden'}
+function refresh(){
+  const imgs=images[curSection];
+  if(!imgs||imgs.length===0)return;
+  const img=imgs[cur];
+  document.getElementById('lbImg').src=`https://drive.google.com/thumbnail?id=${img.id}&sz=w1200`;
+  document.getElementById('lbTitle').textContent=img.name.replace(/\.[^/.]+$/,'');
+  document.getElementById('lbCounter').textContent=`${cur+1}/${imgs.length}`;
+  const tag=document.getElementById('lbTag');
+  tag.textContent=curSection==='modeles'?'Modèles':'Mes réalisations';
+  tag.className='lb-tag '+(curSection==='modeles'?'modeles':'realisations');
+}
 function closeLb(){document.getElementById('lb').classList.remove('on');document.body.style.overflow=''}
 function closeLbBg(e){if(e.target===document.getElementById('lb'))closeLb()}
-function navLb(dir){const len=images[curSection].length;if(len===0)return;cur=(cur+dir+len)%len;const w=document.getElementById('lbWrap');w.style.animation='none';void w.offsetWidth;w.style.animation='popIn 0.25s cubic-bezier(.16,.84,.44,1) both';refresh()}
-document.addEventListener('keydown',e=>{if(!document.getElementById('lb').classList.contains('on'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowRight')navLb(1);if(e.key==='ArrowLeft')navLb(-1)});
+function navLb(dir){
+  const len=images[curSection].length;
+  if(len===0)return;
+  cur=(cur+dir+len)%len;
+  const w=document.getElementById('lbWrap');
+  w.style.animation='none';void w.offsetWidth;
+  w.style.animation='popIn 0.25s cubic-bezier(.16,.84,.44,1) both';
+  refresh();
+}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lb').classList.contains('on'))return;
+  if(e.key==='Escape')closeLb();
+  if(e.key==='ArrowRight')navLb(1);
+  if(e.key==='ArrowLeft')navLb(-1);
+});
+window.addEventListener('load',()=>{
+  loadDriveImages(FOLDER_IDS.modeles,'modeles');
+  loadDriveImages(FOLDER_IDS.realisations,'realisations');
+});
 </script>
 </body>
 </html>
